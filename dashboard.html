@@ -270,17 +270,12 @@
     <div class="container">
         <div class="setup-box" id="setupBox">
             <h2>⚙️ Configuración Requerida</h2>
-            <p>Necesitas crear un Apps Script que le diga al dashboard dónde leer los datos:</p>
+            <p>Necesitas ingresar la URL del Apps Script que creaste:</p>
             <ol>
                 <li>Abre tu Google Sheet</li>
                 <li>Ve a <code>Extensiones > Apps Script</code></li>
-                <li>Reemplaza TODO el código por el del archivo <code>apps-script-dashboard.gs</code></li>
-                <li>Haz Ctrl+S para guardar</li>
                 <li>Haz click en <code>Desplegar > Nueva implementación</code></li>
-                <li>Tipo: <code>Aplicación web</code></li>
-                <li>Ejecutar como: Tu cuenta</li>
-                <li>Quién tiene acceso: <code>Cualquiera</code></li>
-                <li>Copia la URL que te aparece y pégala aquí:</li>
+                <li>Copia la URL que aparece y pégala aquí:</li>
             </ol>
             
             <div style="margin-top: 20px;">
@@ -290,7 +285,6 @@
             
             <div class="button-group">
                 <button class="btn-primary" onclick="guardarUrl()">💾 Guardar URL</button>
-                <button class="btn-secondary" onclick="cargarDatos()">📊 Cargar Datos</button>
             </div>
             
             <div id="mensajeError" class="error-box hidden" style="margin-top: 20px;"></div>
@@ -511,13 +505,23 @@
             XLSX.writeFile(wb, 'productos-bierport.xlsx');
         }
         
-        // Al cargar, mostrar URL guardada
+        // Al cargar la página, obtener URL y cargar automáticamente
         window.addEventListener('load', () => {
             obtenerUrl();
+            const url = localStorage.getItem('bierportAppsScriptUrl');
+            if (url) {
+                // Si ya tiene URL guardada, cargar datos automáticamente
+                cargarDatos();
+            }
         });
         
         // Actualizar cada 5 minutos
-        setInterval(cargarDatos, 5 * 60 * 1000);
+        setInterval(() => {
+            const url = localStorage.getItem('bierportAppsScriptUrl');
+            if (url && !document.getElementById('setupBox').classList.contains('hidden') === false) {
+                cargarDatos();
+            }
+        }, 5 * 60 * 1000);
     </script>
 </body>
 </html>
