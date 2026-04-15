@@ -221,6 +221,24 @@
             display: none !important;
         }
         
+        .error-box {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
         @media (max-width: 768px) {
             .info-grid {
                 grid-template-columns: 1fr;
@@ -263,6 +281,8 @@
                 <button class="btn-primary" onclick="guardarSheetId()">💾 Guardar ID</button>
                 <button class="btn-secondary" onclick="cargarDatos()">📊 Cargar Datos</button>
             </div>
+            
+            <div id="mensajeError" class="error-box hidden" style="margin-top: 20px;"></div>
         </div>
         
         <div id="dashboardContent" class="hidden">
@@ -308,16 +328,15 @@
         let chartBarras = null;
         let datosGlobales = [];
         
-        // Guardar/cargar Sheet ID del localStorage
         function guardarSheetId() {
             const sheetId = document.getElementById('sheetIdInput').value.trim();
             if (!sheetId) {
-                alert('Por favor ingresa el ID del Sheet');
+                mostrarError('Por favor ingresa el ID del Sheet');
                 return;
             }
             localStorage.setItem('bierportSheetId', sheetId);
-            alert('ID guardado correctamente');
-            cargarDatos();
+            mostrarError('✅ ID guardado correctamente', 'success');
+            setTimeout(() => cargarDatos(), 1000);
         }
         
         function obtenerSheetId() {
@@ -329,42 +348,75 @@
             return sheetId;
         }
         
+        function mostrarError(mensaje, tipo = 'error') {
+            const box = document.getElementById('mensajeError');
+            box.textContent = mensaje;
+            box.classList.remove('hidden');
+            if (tipo === 'success') {
+                box.classList.remove('error-box');
+                box.classList.add('success-box');
+            } else {
+                box.classList.remove('success-box');
+                box.classList.add('error-box');
+            }
+        }
+        
         async function cargarDatos() {
             const sheetId = obtenerSheetId();
             
             try {
-                // Usar CSV export de Google Sheets
-                const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+                // Usar export CSV pero especificando la hoja "Análisis" (gid=1 es generalmente la segunda hoja)
+                // Primero intentamos con gid=1
+                const urls = [
+                    `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=1`,
+                    `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`
+                ];
                 
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('No se pueden cargar los datos');
+                let csv = null;
+                let ultimoError = null;
                 
-                const csv = await response.text();
-                const lineas = csv.trim().split('\n');
-                
-                // Buscar la línea que comienza con "Producto"
-                let indiceEncabezado = -1;
-                for (let i = 0; i < lineas.length; i++) {
-                    if (lineas[i].includes('Producto') && lineas[i].includes('Cantidad')) {
-                        indiceEncabezado = i;
-                        break;
+                for (const url of urls) {
+                    try {
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            csv = await response.text();
+                            // Verificar que sea la hoja Análisis
+                            if (csv.includes('Producto') && csv.includes('Cantidad')) {
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        ultimoError = e;
                     }
                 }
                 
-                if (indiceEncabezado === -1) {
-                    throw new Error('No encontré la hoja "Análisis"');
+                if (!csv) {
+                    throw new Error('No se pudo cargar la hoja "Análisis". Verifica que exista.');
+                }
+                
+                const lineas = csv.trim().split('\n');
+                
+                if (lineas.length < 2) {
+                    throw new Error('La hoja "Análisis" está vacía. Registra productos primero.');
                 }
                 
                 const datos = [];
                 
-                for (let i = indiceEncabezado + 1; i < lineas.length; i++) {
+                // Procesar desde la primera línea (ya que es la hoja Análisis)
+                for (let i = 1; i < lineas.length; i++) {
                     const linea = lineas[i].trim();
                     if (!linea) continue;
                     
-                    // Parsear CSV simple
+                    // Parsear CSV - ser cuidadoso con comillas
+                    let producto = '';
+                    let cantidad = 0;
+                    
+                    // Simple split por coma
                     const partes = linea.split(',');
-                    const producto = partes[0] ? partes[0].trim() : '';
-                    const cantidad = partes[1] ? parseInt(partes[1].trim()) : 0;
+                    if (partes.length >= 2) {
+                        producto = partes[0].replace(/"/g, '').trim();
+                        cantidad = parseInt(partes[1].replace(/"/g, '').trim()) || 0;
+                    }
                     
                     if (producto && cantidad > 0) {
                         datos.push({ producto, cantidad });
@@ -372,21 +424,22 @@
                 }
                 
                 if (datos.length === 0) {
-                    alert('Aún no hay datos. Registra productos en el formulario primero.');
-                    return;
+                    throw new Error('No hay datos en la hoja "Análisis". Registra productos en el formulario.');
                 }
                 
                 datosGlobales = datos;
                 mostrarDashboard(datos);
                 
             } catch (error) {
-                alert('Error: ' + error.message + '\n\nVerifica que:\n1. El Sheet esté compartido públicamente\n2. El ID sea correcto\n3. La hoja "Análisis" exista');
+                console.error('Error detallado:', error);
+                mostrarError(`❌ ${error.message}\n\nVerifica que:\n1. El Sheet esté compartido públicamente\n2. El ID sea correcto\n3. La hoja "Análisis" exista con datos`);
             }
         }
         
         function mostrarDashboard(datos) {
             document.getElementById('setupBox').classList.add('hidden');
             document.getElementById('dashboardContent').classList.remove('hidden');
+            document.getElementById('mensajeError').classList.add('hidden');
             
             renderizarEstadisticas(datos);
             renderizarGraficos(datos);
