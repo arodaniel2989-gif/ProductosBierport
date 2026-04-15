@@ -239,6 +239,13 @@
             margin: 20px 0;
         }
         
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
         @media (max-width: 768px) {
             .info-grid {
                 grid-template-columns: 1fr;
@@ -263,22 +270,26 @@
     <div class="container">
         <div class="setup-box" id="setupBox">
             <h2>⚙️ Configuración Requerida</h2>
-            <p>Para que el dashboard funcione, necesitas compartir tu Google Sheet de forma pública:</p>
+            <p>Necesitas crear un Apps Script que le diga al dashboard dónde leer los datos:</p>
             <ol>
                 <li>Abre tu Google Sheet</li>
-                <li>Haz click en <code>Compartir</code> (arriba a la derecha)</li>
-                <li>En "Quién tiene acceso", selecciona <code>Cualquiera con el enlace</code></li>
-                <li>Copia el ID del Sheet (está en la URL entre <code>/d/</code> y <code>/edit</code>)</li>
-                <li>Pega el ID aquí:</li>
+                <li>Ve a <code>Extensiones > Apps Script</code></li>
+                <li>Reemplaza TODO el código por el del archivo <code>apps-script-dashboard.gs</code></li>
+                <li>Haz Ctrl+S para guardar</li>
+                <li>Haz click en <code>Desplegar > Nueva implementación</code></li>
+                <li>Tipo: <code>Aplicación web</code></li>
+                <li>Ejecutar como: Tu cuenta</li>
+                <li>Quién tiene acceso: <code>Cualquiera</code></li>
+                <li>Copia la URL que te aparece y pégala aquí:</li>
             </ol>
             
             <div style="margin-top: 20px;">
-                <input type="text" id="sheetIdInput" placeholder="Ej: 1wkVMexO7CawMEjVNZqA7tJirFsTfBVpqbxizKzUQoqc" 
+                <input type="text" id="appsScriptUrlInput" placeholder="https://script.google.com/macros/s/XXXXXX/userweb" 
                        style="width: 100%; padding: 10px; border: 2px solid #667eea; border-radius: 8px; font-size: 14px;">
             </div>
             
             <div class="button-group">
-                <button class="btn-primary" onclick="guardarSheetId()">💾 Guardar ID</button>
+                <button class="btn-primary" onclick="guardarUrl()">💾 Guardar URL</button>
                 <button class="btn-secondary" onclick="cargarDatos()">📊 Cargar Datos</button>
             </div>
             
@@ -286,6 +297,8 @@
         </div>
         
         <div id="dashboardContent" class="hidden">
+            <div id="loading" class="loading hidden">Cargando datos...</div>
+            
             <!-- Estadísticas -->
             <div class="card">
                 <h2>📈 Estadísticas Generales</h2>
@@ -328,24 +341,23 @@
         let chartBarras = null;
         let datosGlobales = [];
         
-        function guardarSheetId() {
-            const sheetId = document.getElementById('sheetIdInput').value.trim();
-            if (!sheetId) {
-                mostrarError('Por favor ingresa el ID del Sheet');
+        function guardarUrl() {
+            const url = document.getElementById('appsScriptUrlInput').value.trim();
+            if (!url) {
+                mostrarError('Por favor ingresa la URL del Apps Script');
                 return;
             }
-            localStorage.setItem('bierportSheetId', sheetId);
-            mostrarError('✅ ID guardado correctamente', 'success');
+            localStorage.setItem('bierportAppsScriptUrl', url);
+            mostrarError('✅ URL guardada correctamente', 'success');
             setTimeout(() => cargarDatos(), 1000);
         }
         
-        function obtenerSheetId() {
-            let sheetId = localStorage.getItem('bierportSheetId');
-            if (!sheetId) {
-                sheetId = '1wkVMexO7CawMEjVNZqA7tJirFsTfBVpqbxizKzUQoqc'; // Default
+        function obtenerUrl() {
+            let url = localStorage.getItem('bierportAppsScriptUrl');
+            if (url) {
+                document.getElementById('appsScriptUrlInput').value = url;
             }
-            document.getElementById('sheetIdInput').value = sheetId;
-            return sheetId;
+            return url;
         }
         
         function mostrarError(mensaje, tipo = 'error') {
@@ -362,77 +374,37 @@
         }
         
         async function cargarDatos() {
-            const sheetId = obtenerSheetId();
+            const url = obtenerUrl();
+            
+            if (!url) {
+                mostrarError('Por favor guarda la URL del Apps Script primero');
+                return;
+            }
+            
+            document.getElementById('loading').classList.remove('hidden');
             
             try {
-                // Usar export CSV pero especificando la hoja "Análisis" (gid=1 es generalmente la segunda hoja)
-                // Primero intentamos con gid=1
-                const urls = [
-                    `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=1`,
-                    `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`
-                ];
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Error en la solicitud');
                 
-                let csv = null;
-                let ultimoError = null;
+                const data = await response.json();
                 
-                for (const url of urls) {
-                    try {
-                        const response = await fetch(url);
-                        if (response.ok) {
-                            csv = await response.text();
-                            // Verificar que sea la hoja Análisis
-                            if (csv.includes('Producto') && csv.includes('Cantidad')) {
-                                break;
-                            }
-                        }
-                    } catch (e) {
-                        ultimoError = e;
-                    }
+                if (data.error) {
+                    throw new Error(data.error);
                 }
                 
-                if (!csv) {
-                    throw new Error('No se pudo cargar la hoja "Análisis". Verifica que exista.');
+                if (!data.datos || data.datos.length === 0) {
+                    throw new Error('No hay datos. Registra productos en el formulario.');
                 }
                 
-                const lineas = csv.trim().split('\n');
-                
-                if (lineas.length < 2) {
-                    throw new Error('La hoja "Análisis" está vacía. Registra productos primero.');
-                }
-                
-                const datos = [];
-                
-                // Procesar desde la primera línea (ya que es la hoja Análisis)
-                for (let i = 1; i < lineas.length; i++) {
-                    const linea = lineas[i].trim();
-                    if (!linea) continue;
-                    
-                    // Parsear CSV - ser cuidadoso con comillas
-                    let producto = '';
-                    let cantidad = 0;
-                    
-                    // Simple split por coma
-                    const partes = linea.split(',');
-                    if (partes.length >= 2) {
-                        producto = partes[0].replace(/"/g, '').trim();
-                        cantidad = parseInt(partes[1].replace(/"/g, '').trim()) || 0;
-                    }
-                    
-                    if (producto && cantidad > 0) {
-                        datos.push({ producto, cantidad });
-                    }
-                }
-                
-                if (datos.length === 0) {
-                    throw new Error('No hay datos en la hoja "Análisis". Registra productos en el formulario.');
-                }
-                
-                datosGlobales = datos;
-                mostrarDashboard(datos);
+                datosGlobales = data.datos;
+                mostrarDashboard(data.datos);
                 
             } catch (error) {
-                console.error('Error detallado:', error);
-                mostrarError(`❌ ${error.message}\n\nVerifica que:\n1. El Sheet esté compartido públicamente\n2. El ID sea correcto\n3. La hoja "Análisis" exista con datos`);
+                console.error('Error:', error);
+                mostrarError(`❌ ${error.message}\n\nVerifica que:\n1. La URL del Apps Script sea correcta\n2. El Apps Script esté actualizado\n3. Haya datos en la hoja "Análisis"`);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
             }
         }
         
@@ -539,9 +511,9 @@
             XLSX.writeFile(wb, 'productos-bierport.xlsx');
         }
         
-        // Al cargar, mostrar el Sheet ID guardado
+        // Al cargar, mostrar URL guardada
         window.addEventListener('load', () => {
-            obtenerSheetId();
+            obtenerUrl();
         });
         
         // Actualizar cada 5 minutos
