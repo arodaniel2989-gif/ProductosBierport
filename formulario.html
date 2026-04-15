@@ -60,9 +60,16 @@
             font-size: 14px;
         }
         
-        input[type="text"],
-        input[type="date"],
-        select {
+        .info-field {
+            background: #f8f9ff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+        
+        input[type="text"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
@@ -72,9 +79,7 @@
             font-family: inherit;
         }
         
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        select:focus {
+        input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
             background-color: #f8f9ff;
@@ -158,6 +163,25 @@
             color: #555;
             margin-bottom: 20px;
         }
+        
+        .turno-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .turno-manana {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .turno-noche {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
     </style>
 </head>
 <body>
@@ -169,7 +193,7 @@
         </div>
         
         <div class="info-box">
-            ℹ️ Cada producto que registres se sumará a la lista de compras del día.
+            ℹ️ La fecha y turno se registran automáticamente según la hora actual.
         </div>
         
         <div class="message" id="message"></div>
@@ -177,18 +201,13 @@
         
         <form id="productForm">
             <div class="form-group">
-                <label for="fecha">Fecha</label>
-                <input type="date" id="fecha" required>
+                <label>Fecha</label>
+                <div class="info-field" id="fechaDisplay">--</div>
             </div>
             
             <div class="form-group">
-                <label for="turno">Turno</label>
-                <select id="turno" required>
-                    <option value="">-- Selecciona turno --</option>
-                    <option value="Mañana">Mañana</option>
-                    <option value="Tarde">Tarde</option>
-                    <option value="Noche">Noche</option>
-                </select>
+                <label>Turno</label>
+                <div class="info-field" id="turnoDisplay">--</div>
             </div>
             
             <div class="form-group">
@@ -209,24 +228,85 @@
     </div>
 
     <script>
-        // Establecer fecha de hoy por defecto
-        const hoy = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha').value = hoy;
-
-        // URL del Apps Script (IMPORTANTE: reemplazar con la URL real)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsgevCZF_xaOOoEcdFBNxCTDGqmyYVpdOO4enDtAMTas6dO0P0YfzjhfWcQIsHypMI_Q/exec';
-
+        // Elementos
         const form = document.getElementById('productForm');
         const messageDiv = document.getElementById('message');
         const loadingDiv = document.getElementById('loading');
+        const fechaDisplay = document.getElementById('fechaDisplay');
+        const turnoDisplay = document.getElementById('turnoDisplay');
+        const vendedorInput = document.getElementById('vendedor');
+        const productoInput = document.getElementById('producto');
 
+        // URL del Apps Script
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsgevCZF_xaOOoEcdFBNxCTDGqmyYVpdOO4enDtAMTas6dO0P0YfzjhfWcQIsHypMI_Q/exec';
+
+        // Función para obtener la fecha actual en formato YYYY-MM-DD
+        function obtenerFechaActual() {
+            const fecha = new Date();
+            const year = fecha.getFullYear();
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+            const dia = String(fecha.getDate()).padStart(2, '0');
+            return `${year}-${mes}-${dia}`;
+        }
+
+        // Función para obtener la fecha legible (DD/MM/YYYY)
+        function obtenerFechaLegible(fechaISO) {
+            const [year, mes, dia] = fechaISO.split('-');
+            return `${dia}/${mes}/${year}`;
+        }
+
+        // Función para determinar el turno según la hora actual
+        function obtenerTurnoActual() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            
+            // Mañana: 07:00 - 15:59
+            if (hora >= 7 && hora < 16) {
+                return { nombre: 'Mañana', css: 'turno-manana' };
+            }
+            // Noche: 16:00 - 23:59
+            else if (hora >= 16 && hora < 24) {
+                return { nombre: 'Noche', css: 'turno-noche' };
+            }
+            // Madrugada (00:00 - 06:59) → consideramos que sigue siendo noche del día anterior
+            else {
+                return { nombre: 'Noche', css: 'turno-noche' };
+            }
+        }
+
+        // Función para actualizar fecha y turno
+        function actualizarFechaYTurno() {
+            const fechaISO = obtenerFechaActual();
+            const fechaLegible = obtenerFechaLegible(fechaISO);
+            const turno = obtenerTurnoActual();
+            
+            fechaDisplay.textContent = fechaLegible;
+            turnoDisplay.innerHTML = `<span class="turno-badge ${turno.css}">${turno.nombre}</span>`;
+            
+            // Guardar en atributos para usar en submit
+            form.dataset.fecha = fechaISO;
+            form.dataset.turno = turno.nombre;
+        }
+
+        // Inicializar fecha y turno al cargar
+        actualizarFechaYTurno();
+
+        // Actualizar cada minuto por si cambia la hora
+        setInterval(actualizarFechaYTurno, 60000);
+
+        // Enviar formulario
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const fecha = document.getElementById('fecha').value;
-            const turno = document.getElementById('turno').value;
-            const vendedor = document.getElementById('vendedor').value;
-            const producto = document.getElementById('producto').value;
+            const fecha = form.dataset.fecha;
+            const turno = form.dataset.turno;
+            const vendedor = vendedorInput.value.trim();
+            const producto = productoInput.value.trim();
+
+            if (!vendedor || !producto) {
+                showMessage('❌ Por favor completa todos los campos', 'error');
+                return;
+            }
 
             messageDiv.style.display = 'none';
             loadingDiv.style.display = 'block';
@@ -245,19 +325,19 @@
                 if (response.ok || response.status === 0) {
                     showMessage('✅ Producto registrado correctamente', 'success');
                     form.reset();
-                    document.getElementById('fecha').value = hoy;
-                    document.getElementById('producto').focus();
+                    productoInput.focus();
                 } else {
                     showMessage('⚠️ Hubo un problema al enviar el dato', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showMessage('❌ Error de conexión. Verifica la URL del servidor.', 'error');
+                showMessage('❌ Error de conexión. Verifica que la URL sea correcta.', 'error');
             } finally {
                 loadingDiv.style.display = 'none';
             }
         });
 
+        // Mostrar mensajes
         function showMessage(text, type) {
             messageDiv.textContent = text;
             messageDiv.className = 'message ' + type;
@@ -269,6 +349,9 @@
                 }, 3000);
             }
         }
+
+        // Enfocar el campo de producto al cargar
+        productoInput.focus();
     </script>
 </body>
 </html>
