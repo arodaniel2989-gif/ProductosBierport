@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bierport - Sistema de Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+        
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .title {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid rgba(255,255,255,0.3);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 200px;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .card-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* Colores por sección */
+        .card.productos {
+            border-top: 4px solid #667eea;
+        }
+        
+        .card.panaderia {
+            border-top: 4px solid #f59e0b;
+        }
+        
+        .card.fiambreria {
+            border-top: 4px solid #ec4899;
+        }
+        
+        .card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card.productos:hover {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        }
+        
+        .card.panaderia:hover {
+            background: linear-gradient(135deg, #f59e0b15 0%, #d9770615 100%);
+        }
+        
+        .card.fiambreria:hover {
+            background: linear-gradient(135deg, #ec489915 0%, #be185d15 100%);
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 12px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 24px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">🛒 Bierport</div>
+            <h1 class="title">Sistema de Control Integral</h1>
+            <p class="subtitle">Productos · Panadería · Fiambrería</p>
+        </div>
+        
+        <!-- FORMULARIOS -->
+        <div class="section">
+            <h2 class="section-title">📝 Formularios - Registrar Datos</h2>
+            <div class="grid">
+                <a href="formulario.html" class="card productos">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">Productos Faltantes</div>
+                    <div class="card-desc">Registra productos que solicitan los clientes</div>
+                    <div class="badge">Formulario</div>
+                </a>
+                
+                <a href="panaderia_formulario.html" class="card panaderia">
+                    <div class="card-icon">🥐</div>
+                    <div class="card-title">Panadería</div>
+                    <div class="card-desc">Apertura y cierre diario de stock</div>
+                    <div class="badge">Formulario</div>
+                </a>
+                
+                <a href="fiambreria_formulario.html" class="card fiambreria">
+                    <div class="card-icon">🥓</div>
+                    <div class="card-title">Fiambrería</div>
+                    <div class="card-desc">Registro de piezas con merma y rendimiento</div>
+                    <div class="badge">Formulario</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- DASHBOARDS -->
+        <div class="section">
+            <h2 class="section-title">📊 Dashboards - Analizar Datos</h2>
+            <div class="grid">
+                <a href="dashboard.html" class="card productos">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">Productos Faltantes</div>
+                    <div class="card-desc">Análisis de solicitudes y demanda</div>
+                    <div class="badge">Dashboard</div>
+                </a>
+                
+                <a href="panaderia_dashboard.html" class="card panaderia">
+                    <div class="card-icon">📈</div>
+                    <div class="card-title">Panadería</div>
+                    <div class="card-desc">Stock, ventas y bajas diarias</div>
+                    <div class="badge">Dashboard</div>
+                </a>
+                
+                <a href="fiambreria_dashboard.html" class="card fiambreria">
+                    <div class="card-icon">📉</div>
+                    <div class="card-title">Fiambrería</div>
+                    <div class="card-desc">Rendimiento, merma y desperdicio</div>
+                    <div class="badge">Dashboard</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>Sistema de Control Integral • Bierport © 2025</p>
+            <p style="margin-top: 10px; opacity: 0.8;">Última actualización: Abril 2025</p>
+        </div>
+    </div>
+</body>
+</html>
