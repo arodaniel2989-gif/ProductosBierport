@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Stock - Bierport</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #f59e0b;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid #f59e0b;
+            padding-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab-button {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: #f59e0b;
+            border-bottom-color: #f59e0b;
+        }
+        
+        .tab-button:hover:not(:disabled) {
+            color: #f59e0b;
+        }
+        
+        .tab-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #f59e0b;
+            background-color: #fffbf0;
+        }
+        
+        input:disabled,
+        textarea:disabled,
+        select:disabled {
+            background-color: #f9f9f9;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .product-card {
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover {
+            border-color: #f59e0b;
+            background-color: #fffbf0;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .product-unit {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+        
+        .product-inputs {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .product-inputs input {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .btn-submit {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-submit:hover:not(:disabled) {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-clear:hover:not(:disabled) {
+            background: #e0e0e0;
+        }
+        
+        .message {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info-box {
+            background: #fff8e1;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .resumen-box {
+            background: #e8f5e9;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .resumen-box.active {
+            display: block;
+        }
+        
+        .resumen-title {
+            color: #155724;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .resumen-item {
+            color: #155724;
+            font-size: 14px;
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .resumen-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .readonly-input {
+            background-color: #f9f9f9;
+            color: #666;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #f59e0b;
+            font-weight: 600;
+            padding: 20px;
+        }
+        
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .btn-si {
+            background: #28a745;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-si:hover {
+            background: #218838;
+        }
+        
+        .btn-no {
+            background: #6c757d;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-no:hover {
+            background: #5a6268;
+        }
+        
+        .bajas-form {
+            display: none;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .bajas-form.active {
+            display: block;
+        }
+        
+        .bajas-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .bajas-table th,
+        .bajas-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .bajas-table th {
+            background: #f0f0f0;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .bajas-table tr:hover {
+            background: #fff8e1;
+        }
+        
+        .btn-eliminar-baja {
+            background: #dc3545;
+            color: white;
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-eliminar-baja:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🏪 Control de Stock y Bajas</h1>
+            <p>Panadería + Fiambrería • Apertura y Cierre</p>
+        </div>
+        
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="cambiarTab('apertura')" id="btn-apertura">🌅 Apertura</button>
+            <button class="tab-button" onclick="cambiarTab('cierre')" id="btn-cierre" disabled>🌙 Cierre</button>
+        </div>
+        
+        <!-- TAB APERTURA -->
+        <div id="apertura" class="tab-content active">
+            <div class="info-box">
+                ℹ️ Registra el stock inicial de Panadería y Fiambrería al abrir el local
+            </div>
+            
+            <div class="message" id="messageApertura"></div>
+            <div class="loading" id="loadingApertura">Guardando...</div>
+            
+            <form id="formApertura">
+                <div class="card">
+                    <h2>📋 Información General</h2>
+                    
+                    <div class="form-group">
+                        <label for="fechaApertura">Fecha</label>
+                        <input type="date" id="fechaApertura" required readonly class="readonly-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="responsableApertura">Tu Nombre</label>
+                        <input type="text" id="responsableApertura" placeholder="Nombre completo" required>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>🥐 Panadería - Stock Inicial</h2>
+                    <div class="products-grid" id="panaderiaApertura"></div>
+                </div>
+                
+                <div class="card">
+                    <h2>🥓 Fiambrería - Stock Inicial (kg)</h2>
+                    <div class="products-grid" id="fiambreria"></div>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">✅ Guardar Apertura</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- TAB CIERRE -->
+        <div id="cierre" class="tab-content">
+            <div class="info-box">
+                ℹ️ Registra el stock final de Panadería y Fiambrería al cerrar el local
+            </div>
+            
+            <!-- RESUMEN DE APERTURA -->
+            <div class="resumen-box" id="resumenApertura">
+                <div class="resumen-title">✅ Apertura Registrada</div>
+                <div class="resumen-item">Responsable: <strong id="resumenResponsable"></strong></div>
+                <div class="resumen-item">Fecha: <strong id="resumenFecha"></strong></div>
+                <div class="resumen-item">Stock inicial cargado correctamente</div>
+            </div>
+            
+            <div class="message" id="messageCierre"></div>
+            <div class="loading" id="loadingCierre">Guardando...</div>
+            
+            <form id="formCierre">
+                <div class="card">
+                    <h2>📋 Información General</h2>
+                    
+                    <div class="form-group">
+                        <label for="fechaCierre">Fecha</label>
+                        <input type="date" id="fechaCierre" required readonly class="readonly-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="responsableCierre">Tu Nombre</label>
+                        <input type="text" id="responsableCierre" placeholder="Nombre completo" required>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>🥐 Panadería - Stock Final</h2>
+                    <div class="products-grid" id="panaderiacierre"></div>
+                </div>
+                
+                <div class="card">
+                    <h2>🥓 Fiambrería - Stock Final (kg)</h2>
+                    <div class="products-grid" id="fiambreriacierre"></div>
+                </div>
+                
+                <div class="card">
+                    <h2>📝 Notas</h2>
+                    <div class="form-group">
+                        <label for="notas">Observaciones (opcional)</label>
+                        <textarea id="notas" placeholder="Ej: Demanda alta, productos faltantes, etc." style="resize: vertical; min-height: 80px;"></textarea>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="btn-submit" onclick="validarYGuardarCierre()">✅ Guardar Cierre</button>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+    
+    <!-- MODAL ALERTA BAJAS -->
+    <div id="modalBajas" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">⚠️ Productos para dar de baja</div>
+            <p style="color: #666; margin-bottom: 20px;">¿Hay productos que se dieron de baja hoy?</p>
+            
+            <!-- FORMULARIO BAJAS -->
+            <div class="bajas-form" id="bajasForm">
+                <div class="form-group">
+                    <label for="selectProductoBaja">Selecciona producto</label>
+                    <select id="selectProductoBaja" required>
+                        <option value="">-- Selecciona --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pesoBaja">Cantidad de baja</label>
+                    <input type="number" id="pesoBaja" placeholder="Ej: 0.5" step="0.1" required>
+                    <small id="unitBaja" style="color: #999; display: block; margin-top: 5px;"></small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="motivoBaja">Motivo</label>
+                    <select id="motivoBaja" required>
+                        <option value="">-- Selecciona motivo --</option>
+                        <option value="Último corte sin fetejar">Último corte sin fetejar (Fiambrería)</option>
+                        <option value="Producto vencido">Producto vencido</option>
+                        <option value="Rotura/Daño">Rotura/Daño</option>
+                        <option value="Merma natural">Merma natural</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="btn-submit" onclick="agregarBaja()" style="margin-top: 15px;">Agregar baja</button>
+                
+                <!-- TABLA DE BAJAS REGISTRADAS -->
+                <table class="bajas-table" id="tablaBajas" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Motivo</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaBajas"></tbody>
+                </table>
+            </div>
+            
+            <div class="modal-buttons">
+                <button type="button" class="btn-si" onclick="mostrarFormularioBajas()">Sí, hay bajas</button>
+                <button type="button" class="btn-no" onclick="guardarCierreSinBajas()">No, sin bajas</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PRODUCTOS_PANADERIA_UNIDADES = [
+            'Tortillas gruesas',
+            'Tortillas finitas',
+            'Bollitos',
+            'Medialunas',
+            'Medialunas DDL',
+            'Facturas con crema',
+            'Facturas vigilantes',
+            'Sacramentos'
+        ];
+        
+        const PRODUCTOS_PANADERIA_KG = [
+            'Pan francés',
+            'Pan sanguchero',
+            'Pan negro',
+            'Semoladas',
+            'Polvorones',
+            'Tostadas'
+        ];
+        
+        const PRODUCTOS_FIAMBRERIA = [
+            'Queso en barra',
+            'Queso cremoso',
+            'Salame',
+            'Mortadela',
+            'Salchicho',
+            'Jamón cocido',
+            'Jamón serrano'
+        ];
+        
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsgevCZF_xaOOoEcdFBNxCTDGqmyYVpdOO4enDtAMTas6dO0P0YfzjhfWcQIsHypMI_Q/exec';
+        
+        let aperturaGuardada = false;
+        let datosApertura = {};
+        let datosCierre = {};
+        let bajas = [];
+        
+        function establecerFechas() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaApertura').value = hoy;
+            document.getElementById('fechaCierre').value = hoy;
+        }
+        
+        function crearProductoCard(producto, tipo, fase) {
+            const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            let unit = 'kg';
+            let inputId = '';
+            
+            if (tipo === 'panaderia_unidades') {
+                unit = 'unidades';
+                inputId = `${fase}_pan_u_${idProducto}`;
+            } else if (tipo === 'panaderia_kg') {
+                unit = 'kg';
+                inputId = `${fase}_pan_${idProducto}`;
+            } else {
+                unit = 'kg';
+                inputId = `${fase}_fiam_${idProducto}`;
+            }
+            
+            card.innerHTML = `
+                <div class="product-name">${producto}</div>
+                <div class="product-unit">${unit}</div>
+                <div class="product-inputs">
+                    <input type="number" id="${inputId}" placeholder="${unit}" step="0.1" required>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        function crearProductos() {
+            // Apertura - Panadería (Unidades)
+            const contenedorPanApertura = document.getElementById('panaderiaApertura');
+            
+            PRODUCTOS_PANADERIA_UNIDADES.forEach(producto => {
+                contenedorPanApertura.appendChild(crearProductoCard(producto, 'panaderia_unidades', 'apertura'));
+            });
+            
+            // Apertura - Panadería (kg)
+            PRODUCTOS_PANADERIA_KG.forEach(producto => {
+                contenedorPanApertura.appendChild(crearProductoCard(producto, 'panaderia_kg', 'apertura'));
+            });
+            
+            // Apertura - Fiambrería
+            const contenedorFiamApertura = document.getElementById('fiambreria');
+            PRODUCTOS_FIAMBRERIA.forEach(producto => {
+                contenedorFiamApertura.appendChild(crearProductoCard(producto, 'fiambreria', 'apertura'));
+            });
+            
+            // Cierre - Panadería (Unidades)
+            const contenedorPanCierre = document.getElementById('panaderiacierre');
+            
+            PRODUCTOS_PANADERIA_UNIDADES.forEach(producto => {
+                contenedorPanCierre.appendChild(crearProductoCard(producto, 'panaderia_unidades', 'cierre'));
+            });
+            
+            // Cierre - Panadería (kg)
+            PRODUCTOS_PANADERIA_KG.forEach(producto => {
+                contenedorPanCierre.appendChild(crearProductoCard(producto, 'panaderia_kg', 'cierre'));
+            });
+            
+            // Cierre - Fiambrería
+            const contenedorFiamCierre = document.getElementById('fiambreriacierre');
+            PRODUCTOS_FIAMBRERIA.forEach(producto => {
+                contenedorFiamCierre.appendChild(crearProductoCard(producto, 'fiambreria', 'cierre'));
+            });
+        }
+        
+        function cambiarTab(tab) {
+            if (tab === 'cierre' && !aperturaGuardada) {
+                alert('Primero debes guardar la apertura');
+                return;
+            }
+            
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        document.getElementById('formApertura').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fecha = document.getElementById('fechaApertura').value;
+            const responsable = document.getElementById('responsableApertura').value;
+            const productos = {};
+            
+            PRODUCTOS_PANADERIA_UNIDADES.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const valor = document.getElementById(`apertura_pan_u_${idProducto}`).value;
+                if (valor) productos[`pan_u_${producto}`] = parseFloat(valor);
+            });
+            
+            PRODUCTOS_PANADERIA_KG.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const valor = document.getElementById(`apertura_pan_${idProducto}`).value;
+                if (valor) productos[`pan_${producto}`] = parseFloat(valor);
+            });
+            
+            PRODUCTOS_FIAMBRERIA.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const valor = document.getElementById(`apertura_fiam_${idProducto}`).value;
+                if (valor) productos[`fiam_${producto}`] = parseFloat(valor);
+            });
+            
+            const datos = { tipo: 'apertura', fecha, responsable, productos };
+            datosApertura = { fecha, responsable, productos };
+            
+            document.getElementById('loadingApertura').style.display = 'block';
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        tipo: 'perecederos',
+                        datos: JSON.stringify(datos)
+                    })
+                });
+                
+                if (response.ok || response.status === 0) {
+                    aperturaGuardada = true;
+                    
+                    document.getElementById('btn-apertura').disabled = true;
+                    document.getElementById('btn-cierre').disabled = false;
+                    document.getElementById('btn-cierre').classList.add('active');
+                    document.getElementById('btn-apertura').classList.remove('active');
+                    
+                    document.getElementById('resumenResponsable').textContent = responsable;
+                    document.getElementById('resumenFecha').textContent = new Date(fecha).toLocaleDateString('es-ES');
+                    document.getElementById('resumenApertura').classList.add('active');
+                    
+                    document.getElementById('apertura').classList.remove('active');
+                    document.getElementById('cierre').classList.add('active');
+                    
+                    document.getElementById('fechaCierre').value = fecha;
+                    document.getElementById('responsableCierre').value = responsable;
+                    
+                    mostrarMensaje('messageApertura', '✅ Apertura guardada correctamente', 'success');
+                    
+                } else {
+                    mostrarMensaje('messageApertura', '❌ Error al guardar', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('messageApertura', '❌ Error de conexión', 'error');
+            } finally {
+                document.getElementById('loadingApertura').style.display = 'none';
+            }
+        });
+        
+        function validarYGuardarCierre() {
+            const fecha = document.getElementById('fechaCierre').value;
+            const responsable = document.getElementById('responsableCierre').value;
+            const productos = {};
+            
+            PRODUCTOS_PANADERIA_UNIDADES.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const valor = document.getElementById(`cierre_pan_u_${idProducto}`).value;
+                if (valor) productos[`pan_u_${producto}`] = parseFloat(valor);
+            });
+            
+            PRODUCTOS_PANADERIA_KG.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const valor = document.getElementById(`cierre_pan_${idProducto}`).value;
+                if (valor) productos[`pan_${producto}`] = parseFloat(valor);
+            });
+            
+            PRODUCTOS_FIAMBRERIA.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const valor = document.getElementById(`cierre_fiam_${idProducto}`).value;
+                if (valor) productos[`fiam_${producto}`] = parseFloat(valor);
+            });
+            
+            // VALIDACIONES
+            let errores = [];
+            
+            PRODUCTOS_PANADERIA_UNIDADES.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const inicial = datosApertura.productos[`pan_u_${producto}`] || 0;
+                const final = parseFloat(document.getElementById(`cierre_pan_u_${idProducto}`).value) || 0;
+                
+                if (final > inicial) {
+                    errores.push(`❌ ${producto}: Stock final (${final}) > inicial (${inicial})`);
+                }
+                if (final < 0) {
+                    errores.push(`❌ ${producto}: Stock final no puede ser negativo`);
+                }
+            });
+            
+            PRODUCTOS_PANADERIA_KG.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const inicial = datosApertura.productos[`pan_${producto}`] || 0;
+                const final = parseFloat(document.getElementById(`cierre_pan_${idProducto}`).value) || 0;
+                
+                if (final > inicial) {
+                    errores.push(`❌ ${producto}: Stock final (${final}kg) > inicial (${inicial}kg)`);
+                }
+                if (final < 0) {
+                    errores.push(`❌ ${producto}: Stock final no puede ser negativo`);
+                }
+            });
+            
+            PRODUCTOS_FIAMBRERIA.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const inicial = datosApertura.productos[`fiam_${producto}`] || 0;
+                const final = parseFloat(document.getElementById(`cierre_fiam_${idProducto}`).value) || 0;
+                
+                if (final > inicial) {
+                    errores.push(`❌ ${producto}: Stock final (${final}kg) > inicial (${inicial}kg)`);
+                }
+                if (final < 0) {
+                    errores.push(`❌ ${producto}: Stock final no puede ser negativo`);
+                }
+            });
+            
+            if (errores.length > 0) {
+                mostrarMensaje('messageCierre', errores.join('<br>'), 'error');
+                return;
+            }
+            
+            datosCierre = { fecha, responsable, productos };
+            bajas = [];
+            document.getElementById('tablaBajas').style.display = 'none';
+            document.getElementById('cuerpoTablaBajas').innerHTML = '';
+            document.getElementById('bajasForm').classList.remove('active');
+            document.getElementById('modalBajas').classList.add('active');
+        }
+        
+        function mostrarFormularioBajas() {
+            const todosProductos = [...PRODUCTOS_PANADERIA_UNIDADES, ...PRODUCTOS_PANADERIA_KG, ...PRODUCTOS_FIAMBRERIA];
+            const selectProducto = document.getElementById('selectProductoBaja');
+            selectProducto.innerHTML = '<option value="">-- Selecciona producto --</option>';
+            
+            todosProductos.forEach(producto => {
+                const option = document.createElement('option');
+                option.value = producto;
+                option.textContent = producto;
+                selectProducto.appendChild(option);
+            });
+            
+            selectProducto.addEventListener('change', () => {
+                const producto = selectProducto.value;
+                let unit = 'kg';
+                
+                if (PRODUCTOS_PANADERIA_UNIDADES.includes(producto)) {
+                    unit = 'unidades';
+                }
+                
+                document.getElementById('unitBaja').textContent = `(${unit})`;
+            });
+            
+            document.getElementById('bajasForm').classList.add('active');
+            document.getElementById('btnFinalizarBajas').style.display = 'block';
+            document.querySelector('.modal-buttons').style.display = 'none';
+        }
+        
+        function agregarBaja() {
+            const producto = document.getElementById('selectProductoBaja').value;
+            const cantidad = parseFloat(document.getElementById('pesoBaja').value);
+            const motivo = document.getElementById('motivoBaja').value;
+            
+            if (!producto || !cantidad || !motivo) {
+                alert('Completa todos los campos');
+                return;
+            }
+            
+            if (cantidad <= 0) {
+                alert('La cantidad debe ser mayor a 0');
+                return;
+            }
+            
+            bajas.push({ producto, cantidad, motivo });
+            
+            const cuerpoTabla = document.getElementById('cuerpoTablaBajas');
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${producto}</td>
+                <td>${cantidad.toFixed(2)}</td>
+                <td>${motivo}</td>
+                <td><button type="button" class="btn-eliminar-baja" onclick="eliminarBaja(${bajas.length - 1})">Eliminar</button></td>
+            `;
+            cuerpoTabla.appendChild(fila);
+            document.getElementById('tablaBajas').style.display = 'table';
+            
+            document.getElementById('selectProductoBaja').value = '';
+            document.getElementById('pesoBaja').value = '';
+            document.getElementById('motivoBaja').value = '';
+            document.getElementById('unitBaja').textContent = '';
+            document.getElementById('selectProductoBaja').focus();
+        }
+        
+        function eliminarBaja(index) {
+            bajas.splice(index, 1);
+            document.getElementById('cuerpoTablaBajas').innerHTML = '';
+            bajas.forEach((baja, idx) => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${baja.producto}</td>
+                    <td>${baja.cantidad.toFixed(2)}</td>
+                    <td>${baja.motivo}</td>
+                    <td><button type="button" class="btn-eliminar-baja" onclick="eliminarBaja(${idx})">Eliminar</button></td>
+                `;
+                document.getElementById('cuerpoTablaBajas').appendChild(fila);
+            });
+            
+            if (bajas.length === 0) {
+                document.getElementById('tablaBajas').style.display = 'none';
+            }
+        }
+        
+        async function guardarCierreSinBajas() {
+            await guardarCierre({});
+        }
+        
+        async function guardarCierreConBajas() {
+            const bajasObj = {};
+            bajas.forEach(baja => {
+                bajasObj[baja.producto] = { cantidad: baja.cantidad, motivo: baja.motivo };
+            });
+            await guardarCierre(bajasObj);
+        }
+        
+        async function guardarCierre(bajasObj) {
+            const notas = document.getElementById('notas').value;
+            const datos = { ...datosCierre, notas, bajas: bajasObj };
+            
+            document.getElementById('loadingCierre').style.display = 'block';
+            document.getElementById('modalBajas').classList.remove('active');
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        tipo: 'perecederos',
+                        datos: JSON.stringify(datos)
+                    })
+                });
+                
+                if (response.ok || response.status === 0) {
+                    mostrarMensaje('messageCierre', '✅ Cierre guardado correctamente', 'success');
+                    
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                    
+                } else {
+                    mostrarMensaje('messageCierre', '❌ Error al guardar', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('messageCierre', '❌ Error de conexión', 'error');
+            } finally {
+                document.getElementById('loadingCierre').style.display = 'none';
+            }
+        }
+        
+        function mostrarMensaje(id, texto, tipo) {
+            const element = document.getElementById(id);
+            element.innerHTML = texto;
+            element.className = `message ${tipo}`;
+            element.style.display = 'block';
+            
+            if (tipo === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            establecerFechas();
+            crearProductos();
+            
+            const btnFinalizar = document.createElement('button');
+            btnFinalizar.type = 'button';
+            btnFinalizar.className = 'btn-submit';
+            btnFinalizar.textContent = '✅ Finalizar y Guardar';
+            btnFinalizar.id = 'btnFinalizarBajas';
+            btnFinalizar.style.display = 'none';
+            btnFinalizar.style.marginTop = '15px';
+            btnFinalizar.onclick = guardarCierreConBajas;
+            
+            const bajasForm = document.getElementById('bajasForm');
+            bajasForm.appendChild(btnFinalizar);
+        });
+    </script>
+</body>
+</html>
