@@ -19,47 +19,48 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 60px;
             color: white;
         }
         
         .logo {
             font-size: 48px;
-            font-weight: bold;
             margin-bottom: 10px;
         }
         
         .title {
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 36px;
+            margin: 0 0 10px 0;
+            font-weight: 600;
         }
         
         .subtitle {
             font-size: 16px;
             opacity: 0.9;
+            margin: 0;
         }
         
         .section {
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
         
         .section-title {
-            font-size: 24px;
+            font-size: 18px;
             color: white;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 3px solid rgba(255,255,255,0.3);
+            border-bottom: 2px solid rgba(255,255,255,0.3);
         }
         
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
         
@@ -77,6 +78,7 @@
             flex-direction: column;
             justify-content: center;
             min-height: 200px;
+            border-top: 4px solid;
         }
         
         .card:hover {
@@ -85,150 +87,152 @@
         }
         
         .card-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 44px;
+            margin-bottom: 12px;
         }
         
         .card-title {
             font-size: 18px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 10px;
+            margin: 0 0 8px 0;
         }
         
         .card-desc {
             font-size: 13px;
             color: #666;
             line-height: 1.5;
+            margin: 0 0 12px 0;
         }
         
-        /* Colores por sección */
+        .card-action {
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-top: 12px;
+        }
+        
+        .card.stock {
+            border-top-color: #f59e0b;
+        }
+        
+        .card.stock:hover {
+            background: linear-gradient(135deg, #f59e0b15 0%, #d9770615 100%);
+        }
+        
+        .card.stock .card-action {
+            background: #f59e0b15;
+            color: #d97706;
+        }
+        
         .card.productos {
-            border-top: 4px solid #667eea;
-        }
-        
-        .card.panaderia {
-            border-top: 4px solid #f59e0b;
-        }
-        
-        .card.fiambreria {
-            border-top: 4px solid #ec4899;
-        }
-        
-        .card:hover {
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-top-color: #667eea;
         }
         
         .card.productos:hover {
             background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
         }
         
-        .card.panaderia:hover {
-            background: linear-gradient(135deg, #f59e0b15 0%, #d9770615 100%);
+        .card.productos .card-action {
+            background: #667eea15;
+            color: #534ab7;
         }
         
-        .card.fiambreria:hover {
-            background: linear-gradient(135deg, #ec489915 0%, #be185d15 100%);
+        .card.caja {
+            border-top-color: #17a2b8;
+        }
+        
+        .card.caja:hover {
+            background: linear-gradient(135deg, #17a2b815 0%, #13849615 100%);
+        }
+        
+        .card.caja .card-action {
+            background: #17a2b815;
+            color: #138496;
+        }
+        
+        .info-box {
+            background: rgba(255,255,255,0.15);
+            border-left: 4px solid white;
+            padding: 16px;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 50px;
         }
         
         .footer {
             text-align: center;
             color: white;
-            margin-top: 60px;
             padding-top: 20px;
             border-top: 1px solid rgba(255,255,255,0.2);
             font-size: 12px;
-        }
-        
-        .badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            margin-top: 10px;
-        }
-        
-        @media (max-width: 768px) {
-            .title {
-                font-size: 24px;
-            }
-            
-            .grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        
         <!-- HEADER -->
         <div class="header">
-            <div class="logo">🛒 Bierport</div>
-            <h1 class="title">Sistema de Control Integral</h1>
-            <p class="subtitle">Productos · Panadería · Fiambrería</p>
+            <div class="logo">🛒</div>
+            <h1 class="title">BIERPORT</h1>
+            <p class="subtitle">Sistema de Control Integral</p>
         </div>
         
-        <!-- FORMULARIOS -->
+        <!-- SECCIÓN 1: CONTROLES OPERATIVOS -->
         <div class="section">
-            <h2 class="section-title">📝 Formularios - Registrar Datos</h2>
+            <h2 class="section-title">📋 Controles Operativos</h2>
             <div class="grid">
-                <a href="formulario.html" class="card productos">
+                
+                <!-- CONTROL DE STOCK -->
+                <a href="index-perecederos.html" class="card stock">
+                    <div class="card-icon">🏪</div>
+                    <h3 class="card-title">Control de Stock</h3>
+                    <p class="card-desc">Panadería + Fiambrería<br>Apertura y Cierre</p>
+                    <div class="card-action">→ ABRIR</div>
+                </a>
+                
+                <!-- PRODUCTOS FALTANTES -->
+                <a href="index-productos.html" target="_blank" class="card productos">
                     <div class="card-icon">📦</div>
-                    <div class="card-title">Productos Faltantes</div>
-                    <div class="card-desc">Registra productos que solicitan los clientes</div>
-                    <div class="badge">Formulario</div>
+                    <h3 class="card-title">Productos Faltantes</h3>
+                    <p class="card-desc">Registra productos<br>que solicitan clientes</p>
+                    <div class="card-action">↗ NUEVA PESTAÑA</div>
                 </a>
                 
-                <a href="panaderia_formulario.html" class="card panaderia">
-                    <div class="card-icon">🥐</div>
-                    <div class="card-title">Panadería</div>
-                    <div class="card-desc">Apertura y cierre diario de stock</div>
-                    <div class="badge">Formulario</div>
-                </a>
-                
-                <a href="fiambreria_formulario.html" class="card fiambreria">
-                    <div class="card-icon">🥓</div>
-                    <div class="card-title">Fiambrería</div>
-                    <div class="card-desc">Registro de piezas con merma y rendimiento</div>
-                    <div class="badge">Formulario</div>
-                </a>
             </div>
         </div>
         
-        <!-- DASHBOARDS -->
+        <!-- INFO BOX -->
+        <div class="info-box">
+            💡 Los controles de stock se hacen al inicio y cierre de jornada. Los productos faltantes se registran durante todo el día.
+        </div>
+        
+        <!-- SECCIÓN 2: CONTROL CAJA -->
         <div class="section">
-            <h2 class="section-title">📊 Dashboards - Analizar Datos</h2>
+            <h2 class="section-title">💳 Control de Caja</h2>
             <div class="grid">
-                <a href="dashboard.html" class="card productos">
-                    <div class="card-icon">📦</div>
-                    <div class="card-title">Productos Faltantes</div>
-                    <div class="card-desc">Análisis de solicitudes y demanda</div>
-                    <div class="badge">Dashboard</div>
+                
+                <!-- CONTROL CAJA (SUBE + TRANSFERENCIAS) -->
+                <a href="https://arodaniel2989-gif.github.io/control-sube/" target="_blank" class="card caja">
+                    <div class="card-icon">💰</div>
+                    <h3 class="card-title">Control de Caja</h3>
+                    <p class="card-desc">Saldo SUBE<br>+ Transferencias</p>
+                    <div class="card-action">↗ NUEVA PESTAÑA</div>
                 </a>
                 
-                <a href="panaderia_dashboard.html" class="card panaderia">
-                    <div class="card-icon">📈</div>
-                    <div class="card-title">Panadería</div>
-                    <div class="card-desc">Stock, ventas y bajas diarias</div>
-                    <div class="badge">Dashboard</div>
-                </a>
-                
-                <a href="fiambreria_dashboard.html" class="card fiambreria">
-                    <div class="card-icon">📉</div>
-                    <div class="card-title">Fiambrería</div>
-                    <div class="card-desc">Rendimiento, merma y desperdicio</div>
-                    <div class="badge">Dashboard</div>
-                </a>
             </div>
         </div>
         
         <!-- FOOTER -->
         <div class="footer">
-            <p>Sistema de Control Integral • Bierport © 2025</p>
-            <p style="margin-top: 10px; opacity: 0.8;">Última actualización: Abril 2025</p>
+            <p>Bierport © 2025 • Sistema de Control Integral</p>
         </div>
+        
     </div>
 </body>
 </html>
