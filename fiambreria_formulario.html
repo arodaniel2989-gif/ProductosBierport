@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Fiambrería - Bierport</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ec4899;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #ec4899;
+            background-color: #fdf2f8;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ec4899;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit {
+            background: #ec4899;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: #be185d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(236, 72, 153, 0.3);
+        }
+        
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+        
+        .message {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #ec4899;
+            font-weight: 600;
+        }
+        
+        .info-box {
+            background: #fdf2f8;
+            border-left: 4px solid #ec4899;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .stats-box {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .stats-box p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .stats-value {
+            font-weight: 600;
+            color: #ec4899;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🥓 Fiambrería Bierport</div>
+            <h1 style="color: #333; margin-bottom: 5px;">Control de Piezas</h1>
+            <p class="subtitle">Registro de apertura, cierre y merma</p>
+        </div>
+        
+        <div class="info-box">
+            ℹ️ Registra cuando abres una pieza y cuando se cierra. El sistema calcula automáticamente la merma y el rendimiento.
+        </div>
+        
+        <div class="message" id="message"></div>
+        <div class="loading" id="loading">Enviando...</div>
+        
+        <form id="formulario">
+            <div class="section-title">📋 Información General</div>
+            
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" required readonly style="background-color: #f9f9f9; color: #666;">
+            </div>
+            
+            <div class="form-group">
+                <label for="tipoProducto">Tipo de Fiambre/Queso</label>
+                <select id="tipoProducto" required>
+                    <option value="">-- Selecciona --</option>
+                    <option value="Queso en barra">Queso en barra</option>
+                    <option value="Queso cremoso">Queso cremoso</option>
+                    <option value="Salame">Salame</option>
+                    <option value="Mortadela">Mortadela</option>
+                    <option value="Salchicho">Salchicho</option>
+                    <option value="Jamón cocido">Jamón cocido</option>
+                    <option value="Jamón serrano">Jamón serrano</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            
+            <div class="section-title">🔓 Apertura de Pieza</div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="horaApertura">Hora de Apertura</label>
+                    <input type="time" id="horaApertura" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pesoInicial">Peso Inicial (kg)</label>
+                    <input type="number" id="pesoInicial" placeholder="Ej: 3.8" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="responsableApertura">Responsable que Abre</label>
+                <input type="text" id="responsableApertura" placeholder="Nombre" required>
+            </div>
+            
+            <div class="section-title">🔒 Cierre de Pieza</div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="horaCierre">Hora de Cierre</label>
+                    <input type="time" id="horaCierre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pesoFinal">Peso Final (kg)</label>
+                    <input type="number" id="pesoFinal" placeholder="Ej: 0.5" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="pesoDesperdicio">Desperdicio (kg)</label>
+                    <input type="number" id="pesoDesperdicio" placeholder="Ej: 0.2" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="responsableCierre">Responsable que Cierra</label>
+                    <input type="text" id="responsableCierre" placeholder="Nombre" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" placeholder="Ej: Queso muy seco, alta demanda, etc." style="resize: vertical; min-height: 60px;"></textarea>
+            </div>
+            
+            <!-- Cálculos automáticos -->
+            <div class="stats-box">
+                <p>📊 <strong>Resumen Automático:</strong></p>
+                <p>Vendido: <span class="stats-value" id="pesoVendido">0</span> kg</p>
+                <p>Rendimiento: <span class="stats-value" id="rendimiento">0</span>%</p>
+                <p>Merma Total: <span class="stats-value" id="mermaTotal">0</span> kg</p>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn-submit">✅ Guardar Registro</button>
+                <button type="reset" class="btn-clear">🔄 Limpiar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsgevCZF_xaOOoEcdFBNxCTDGqmyYVpdOO4enDtAMTas6dO0P0YfzjhfWcQIsHypMI_Q/exec';
+        
+        // Establecer fecha actual
+        function establecerFecha() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = hoy;
+        }
+        
+        // Calcular automáticamente
+        function calcular() {
+            const pesoInicial = parseFloat(document.getElementById('pesoInicial').value) || 0;
+            const pesoFinal = parseFloat(document.getElementById('pesoFinal').value) || 0;
+            const pesoDesperdicio = parseFloat(document.getElementById('pesoDesperdicio').value) || 0;
+            
+            const pesoVendido = pesoInicial - pesoFinal - pesoDesperdicio;
+            const rendimiento = pesoInicial > 0 ? ((pesoVendido / pesoInicial) * 100).toFixed(1) : 0;
+            const mermaTotal = pesoFinal + pesoDesperdicio;
+            
+            document.getElementById('pesoVendido').textContent = pesoVendido.toFixed(2);
+            document.getElementById('rendimiento').textContent = rendimiento;
+            document.getElementById('mermaTotal').textContent = mermaTotal.toFixed(2);
+        }
+        
+        // Eventos de input para cálculo automático
+        document.getElementById('pesoInicial').addEventListener('input', calcular);
+        document.getElementById('pesoFinal').addEventListener('input', calcular);
+        document.getElementById('pesoDesperdicio').addEventListener('input', calcular);
+        
+        // Enviar formulario
+        document.getElementById('formulario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const datos = {
+                tipo: 'cierre',
+                fecha: document.getElementById('fecha').value,
+                tipoProducto: document.getElementById('tipoProducto').value,
+                horaApertura: document.getElementById('horaApertura').value,
+                horaCierre: document.getElementById('horaCierre').value,
+                pesoInicial: parseFloat(document.getElementById('pesoInicial').value),
+                pesoFinal: parseFloat(document.getElementById('pesoFinal').value),
+                pesoDesperdicio: parseFloat(document.getElementById('pesoDesperdicio').value),
+                pesoVendido: parseFloat(document.getElementById('pesoVendido').textContent),
+                rendimiento: parseFloat(document.getElementById('rendimiento').textContent),
+                responsableApertura: document.getElementById('responsableApertura').value,
+                responsableCierre: document.getElementById('responsableCierre').value,
+                observaciones: document.getElementById('observaciones').value
+            };
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('message').style.display = 'none';
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        tipo: 'fiambreria',
+                        datos: JSON.stringify(datos)
+                    })
+                });
+                
+                if (response.ok || response.status === 0) {
+                    mostrarMensaje('✅ Registro guardado correctamente', 'success');
+                    document.getElementById('formulario').reset();
+                    establecerFecha();
+                    calcular();
+                } else {
+                    mostrarMensaje('❌ Error al guardar', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error de conexión', 'error');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+        
+        function mostrarMensaje(texto, tipo) {
+            const element = document.getElementById('message');
+            element.textContent = texto;
+            element.className = `message ${tipo}`;
+            element.style.display = 'block';
+            
+            if (tipo === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        // Inicializar
+        window.addEventListener('load', () => {
+            establecerFecha();
+        });
+    </script>
+</body>
+</html>

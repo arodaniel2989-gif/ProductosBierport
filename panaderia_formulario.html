@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Panadería - Bierport</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #f59e0b;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab-button {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: #f59e0b;
+            border-bottom-color: #f59e0b;
+        }
+        
+        .tab-button:hover {
+            color: #f59e0b;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #f59e0b;
+            background-color: #fffbf0;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .product-card {
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover {
+            border-color: #f59e0b;
+            background-color: #fffbf0;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .product-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .product-inputs input {
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+        
+        .message {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+        
+        .info-box {
+            background: #fff8e1;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .readonly-input {
+            background-color: #f9f9f9;
+            color: #666;
+        }
+        
+        .readonly-input:focus {
+            border-color: #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🥐 Panadería Bierport</div>
+            <h1 style="color: #333; margin-bottom: 5px;">Control Diario</h1>
+            <p class="subtitle">Registro de apertura y cierre</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="cambiarTab('apertura')">📖 Apertura</button>
+            <button class="tab-button" onclick="cambiarTab('cierre')">🔒 Cierre</button>
+        </div>
+        
+        <!-- TAB APERTURA -->
+        <div id="apertura" class="tab-content active">
+            <div class="info-box">
+                ℹ️ Registra el stock inicial de todos los productos al abrir el local
+            </div>
+            
+            <div class="message" id="messageApertura"></div>
+            <div class="loading" id="loadingApertura">Enviando...</div>
+            
+            <form id="formApertura">
+                <div class="form-group">
+                    <label for="fechaApertura">Fecha</label>
+                    <input type="date" id="fechaApertura" required readonly style="background-color: #f9f9f9; color: #666;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="responsableApertura">Responsable de Apertura</label>
+                    <input type="text" id="responsableApertura" placeholder="Tu nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Stock Inicial de Productos</label>
+                </div>
+                
+                <div class="products-grid" id="productosApertura">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">✅ Guardar Apertura</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- TAB CIERRE -->
+        <div id="cierre" class="tab-content">
+            <div class="info-box">
+                ℹ️ Registra el stock final y las bajas al cerrar el local
+            </div>
+            
+            <div class="message" id="messageCierre"></div>
+            <div class="loading" id="loadingCierre">Enviando...</div>
+            
+            <form id="formCierre">
+                <div class="form-group">
+                    <label for="fechaCierre">Fecha</label>
+                    <input type="date" id="fechaCierre" required readonly style="background-color: #f9f9f9; color: #666;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="responsableCierre">Responsable de Cierre</label>
+                    <input type="text" id="responsableCierre" placeholder="Tu nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Stock Final de Productos</label>
+                </div>
+                
+                <div class="products-grid" id="productosCierre">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+                
+                <div class="form-group">
+                    <label for="notas">Notas / Observaciones</label>
+                    <textarea id="notas" placeholder="Ej: Demanda alta, faltó pan francés, etc." style="resize: vertical; min-height: 80px;"></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">✅ Guardar Cierre</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const PRODUCTOS = [
+            'Pan francés',
+            'Pan sanguchero',
+            'Pan negro',
+            'Tortillas gruesas',
+            'Tortillas finitas',
+            'Bollitos',
+            'Medialunas',
+            'Medialunas DDL',
+            'Facturas con crema',
+            'Facturas vigilantes',
+            'Sacramentos',
+            'Semoladas',
+            'Polvorones',
+            'Tostadas'
+        ];
+        
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsgevCZF_xaOOoEcdFBNxCTDGqmyYVpdOO4enDtAMTas6dO0P0YfzjhfWcQIsHypMI_Q/exec';
+        
+        // Establecer fecha actual
+        function establecerFechas() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaApertura').value = hoy;
+            document.getElementById('fechaCierre').value = hoy;
+        }
+        
+        // Crear tarjetas de productos
+        function crearProductos() {
+            const contenedorApertura = document.getElementById('productosApertura');
+            const contenedorCierre = document.getElementById('productosCierre');
+            
+            PRODUCTOS.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                
+                // Apertura
+                const cardApertura = document.createElement('div');
+                cardApertura.className = 'product-card';
+                cardApertura.innerHTML = `
+                    <div class="product-name">${producto}</div>
+                    <div class="product-inputs">
+                        <input type="number" id="apertura_${idProducto}" placeholder="Inicial" step="0.1" required>
+                        <input type="hidden" id="apertura_date_${idProducto}" value="">
+                    </div>
+                `;
+                contenedorApertura.appendChild(cardApertura);
+                
+                // Cierre
+                const cardCierre = document.createElement('div');
+                cardCierre.className = 'product-card';
+                cardCierre.innerHTML = `
+                    <div class="product-name">${producto}</div>
+                    <div class="product-inputs">
+                        <input type="number" id="cierre_${idProducto}" placeholder="Final" step="0.1" required>
+                    </div>
+                `;
+                contenedorCierre.appendChild(cardCierre);
+            });
+        }
+        
+        function cambiarTab(tab) {
+            // Cambiar contenido
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            
+            // Cambiar botones
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        // Formulario Apertura
+        document.getElementById('formApertura').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fecha = document.getElementById('fechaApertura').value;
+            const responsable = document.getElementById('responsableApertura').value;
+            const datos = { tipo: 'apertura', fecha, responsable, productos: {} };
+            
+            PRODUCTOS.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const valor = document.getElementById(`apertura_${idProducto}`).value;
+                if (valor) {
+                    datos.productos[producto] = parseFloat(valor);
+                }
+            });
+            
+            await enviarDatos(datos, 'apertura');
+        });
+        
+        // Formulario Cierre
+        document.getElementById('formCierre').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fecha = document.getElementById('fechaCierre').value;
+            const responsable = document.getElementById('responsableCierre').value;
+            const notas = document.getElementById('notas').value;
+            const datos = { tipo: 'cierre', fecha, responsable, notas, productos: {} };
+            
+            PRODUCTOS.forEach(producto => {
+                const idProducto = producto.toLowerCase().replace(/\s+/g, '_');
+                const valor = document.getElementById(`cierre_${idProducto}`).value;
+                if (valor) {
+                    datos.productos[producto] = parseFloat(valor);
+                }
+            });
+            
+            await enviarDatos(datos, 'cierre');
+        });
+        
+        async function enviarDatos(datos, tab) {
+            const loadingId = `loading${tab.charAt(0).toUpperCase() + tab.slice(1)}`;
+            const messageId = `message${tab.charAt(0).toUpperCase() + tab.slice(1)}`;
+            
+            document.getElementById(loadingId).style.display = 'block';
+            document.getElementById(messageId).style.display = 'none';
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        tipo: 'panaderia',
+                        datos: JSON.stringify(datos)
+                    })
+                });
+                
+                if (response.ok || response.status === 0) {
+                    mostrarMensaje(messageId, '✅ Registro guardado correctamente', 'success');
+                    if (tab === 'apertura') document.getElementById('formApertura').reset();
+                    if (tab === 'cierre') document.getElementById('formCierre').reset();
+                    establecerFechas();
+                } else {
+                    mostrarMensaje(messageId, '❌ Error al guardar', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje(messageId, '❌ Error de conexión', 'error');
+            } finally {
+                document.getElementById(loadingId).style.display = 'none';
+            }
+        }
+        
+        function mostrarMensaje(id, texto, tipo) {
+            const element = document.getElementById(id);
+            element.textContent = texto;
+            element.className = `message ${tipo}`;
+            element.style.display = 'block';
+            
+            if (tipo === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        // Inicializar
+        window.addEventListener('load', () => {
+            establecerFechas();
+            crearProductos();
+        });
+    </script>
+</body>
+</html>
