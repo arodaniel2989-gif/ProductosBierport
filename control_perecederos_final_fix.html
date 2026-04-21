@@ -1066,7 +1066,48 @@
             
             if (ok) {
                 mostrarMensaje('messageCierre', '✅ Cierre guardado y sincronizado', 'success');
-                setTimeout(() => limpiarSesion(), 2000);
+                
+                // Limpiar localStorage COMPLETAMENTE después de guardar
+                setTimeout(() => {
+                    localStorage.removeItem('aperturaGuardada');
+                    localStorage.removeItem('datosApertura');
+                    localStorage.removeItem('datosCierre');
+                    localStorage.removeItem('bajas');
+                    
+                    // Resetear variables
+                    aperturaGuardada = false;
+                    datosApertura = {};
+                    datosCierre = {};
+                    bajas = [];
+                    
+                    // Volver a apertura
+                    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                    document.getElementById('apertura').classList.add('active');
+                    document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+                    document.getElementById('btn-apertura').classList.add('active');
+                    
+                    document.getElementById('btn-apertura').disabled = false;
+                    document.getElementById('btn-cierre').disabled = true;
+                    document.getElementById('resumenApertura').classList.remove('active');
+                    
+                    // Reactivar campos
+                    document.getElementById('responsableApertura').disabled = false;
+                    document.getElementById('btnGuardarApertura').disabled = false;
+                    document.querySelectorAll('#panaderiaApertura input, #fiambreria input').forEach(input => {
+                        input.disabled = false;
+                    });
+                    document.querySelectorAll('#panaderiaApertura .product-card, #fiambreria .product-card').forEach(card => {
+                        card.classList.remove('disabled');
+                    });
+                    
+                    // Limpiar campos
+                    document.getElementById('responsableApertura').value = '';
+                    document.getElementById('responsableCierre').value = '';
+                    document.getElementById('notas').value = '';
+                    document.getElementById('messageCierre').style.display = 'none';
+                    
+                    mostrarMensaje('messageApertura', '✅ Jornada completada. Puedes registrar una nueva apertura', 'success');
+                }, 2000);
             } else {
                 mostrarMensaje('messageCierre', '⚠️ Error en sincronización', 'error');
             }
