@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faltantes - Bierport</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 3px;
+        }
+        
+        .header p {
+            color: #999;
+            font-size: 13px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 11px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .info-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .info-box {
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        button {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            padding: 11px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Faltantes</h1>
+            <p>Registra productos que faltan</p>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <!-- Información automática -->
+        <div class="info-row">
+            <div class="info-box">
+                <div class="info-label">Fecha</div>
+                <div class="info-value" id="fechaInfo">--/--</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">Hora</div>
+                <div class="info-value" id="horaInfo">--:--</div>
+            </div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-box">
+                <div class="info-label">Turno</div>
+                <div class="info-value" id="turnoInfo">--</div>
+            </div>
+        </div>
+        
+        <form id="formularioFaltantes" onsubmit="return false;">
+            <div class="form-group">
+                <label for="producto">Producto Faltante *</label>
+                <input type="text" id="producto" placeholder="Ej: Pan francés" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="motivo">Motivo *</label>
+                <select id="motivo" required>
+                    <option value="">-- Selecciona --</option>
+                    <option value="Stock Agotado">Stock Agotado</option>
+                    <option value="Nunca Compramos">Nunca Compramos</option>
+                    <option value="No Llegó del Proveedor">No Llegó del Proveedor</option>
+                </select>
+            </div>
+            
+            <button type="button" id="btnGuardar" onclick="guardarFaltante()">
+                ✅ Registrar
+            </button>
+        </form>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Guardando...</p>
+        </div>
+        
+        <div class="back-link">
+            <a href="index.html">← Volver</a>
+        </div>
+    </div>
+    
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxY2zfpQY6B0baXbBW-io_Twjx8-1LOgC2bNbRCmCVyBFna3CwIyafWZ2RivMcCbUJTSA/exec';
+        
+        function actualizarInfo() {
+            const ahora = new Date();
+            
+            // Fecha
+            const día = String(ahora.getDate()).padStart(2, '0');
+            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+            document.getElementById('fechaInfo').textContent = `${día}/${mes}`;
+            
+            // Hora
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            document.getElementById('horaInfo').textContent = `${horas}:${minutos}`;
+            
+            // Turno (7-16 = Mañana, 16-00 = Tarde)
+            const hora = ahora.getHours();
+            const turno = (hora >= 7 && hora < 16) ? 'Mañana' : 'Tarde';
+            document.getElementById('turnoInfo').textContent = turno;
+        }
+        
+        async function guardarFaltante() {
+            const producto = document.getElementById('producto').value.trim();
+            const motivo = document.getElementById('motivo').value;
+            
+            if (!producto || !motivo) {
+                mostrarMensaje('message', '⚠️ Completa todos los campos', 'error');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('btnGuardar').disabled = true;
+            
+            const ahora = new Date();
+            const año = ahora.getFullYear();
+            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+            const día = String(ahora.getDate()).padStart(2, '0');
+            const fecha = `${año}-${mes}-${día}`;
+            
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            const hora = `${horas}:${minutos}`;
+            
+            const hora_num = ahora.getHours();
+            const turno = (hora_num >= 7 && hora_num < 16) ? 'Mañana' : 'Tarde';
+            
+            const datos = {
+                fecha,
+                hora,
+                turno,
+                producto,
+                motivo
+            };
+            
+            console.log('📤 Enviando:', datos);
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    payload: new URLSearchParams({
+                        tipo: 'faltantes',
+                        datos: JSON.stringify(datos)
+                    })
+                });
+                
+                const result = await response.text();
+                console.log('📥 Respuesta:', result);
+                
+                const jsonResult = JSON.parse(result);
+                
+                if (jsonResult.success) {
+                    mostrarMensaje('message', '✅ Guardado', 'success');
+                    
+                    // Limpiar y enfoque
+                    setTimeout(() => {
+                        document.getElementById('producto').value = '';
+                        document.getElementById('motivo').value = '';
+                        document.getElementById('producto').focus();
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('btnGuardar').disabled = false;
+                        document.getElementById('message').style.display = 'none';
+                    }, 1000);
+                } else {
+                    mostrarMensaje('message', '❌ Error: ' + jsonResult.error, 'error');
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('btnGuardar').disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('message', '❌ Error: ' + error.toString(), 'error');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('btnGuardar').disabled = false;
+            }
+        }
+        
+        function mostrarMensaje(elementId, texto, tipo) {
+            const elemento = document.getElementById(elementId);
+            elemento.textContent = texto;
+            elemento.className = 'message ' + tipo;
+            elemento.style.display = 'block';
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarInfo();
+            setInterval(actualizarInfo, 1000); // Actualizar cada segundo
+        });
+    </script>
+</body>
+</html>
