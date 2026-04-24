@@ -70,8 +70,63 @@
             margin-bottom: 6px;
         }
         
+        /* INFORMACIÓN AUTOMÁTICA */
+        .info-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box {
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
         .form-group {
             margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 70px;
         }
         
         /* GUÍA DE ESPECIFICACIONES */
@@ -116,60 +171,6 @@
         .nota-rapida strong {
             display: inline;
             margin-right: 5px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: #555;
-            font-weight: 500;
-            font-size: 13px;
-        }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 11px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 70px;
-        }
-        
-        .info-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .info-box {
-            padding: 10px;
-            background: #f5f5f5;
-            border-radius: 6px;
-            text-align: center;
-        }
-        
-        .info-label {
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 3px;
-        }
-        
-        .info-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
         }
         
         /* NOTAS DE MOTIVOS */
@@ -296,7 +297,7 @@
         
         <div id="message" class="message"></div>
         
-        <!-- Información automática -->
+        <!-- INFORMACIÓN AUTOMÁTICA -->
         <div class="info-row">
             <div class="info-box">
                 <div class="info-label">Fecha</div>
@@ -308,33 +309,33 @@
             </div>
         </div>
         
-        <div class="info-row">
-            <div class="info-box">
-                <div class="info-label">Turno</div>
-                <div class="info-value" id="turnoInfo">--</div>
-            </div>
-        </div>
-        
+        <!-- FORMULARIO -->
         <form id="formularioFaltantes" onsubmit="return false;">
+            <!-- RESPONSABLE -->
+            <div class="form-group">
+                <label for="responsable">Tu Nombre *</label>
+                <input type="text" id="responsable" placeholder="Ej: Juan" required autofocus>
+            </div>
+            
+            <!-- PRODUCTO -->
             <div class="form-group">
                 <label for="producto">Producto Faltante *</label>
-                <input type="text" id="producto" placeholder="Ej: Pan francés" required autofocus>
+                <input type="text" id="producto" placeholder="Ej: Cerveza Corona 330ml" required>
             </div>
             
             <!-- GUÍA DE ESPECIFICACIONES -->
             <div class="guia-especificaciones">
-                <strong>📝 Sé específico:</strong>
+                <strong>📝 Sé específico (Tipo - Marca - Presentación):</strong>
                 <div class="ejemplos">
-                    <span>Pan francés mediano</span>
-                    <span>Queso en barra (kg)</span>
                     <span>Cerveza Corona 330ml</span>
                 </div>
                 <div class="nota-rapida">
-                    <strong>NO:</strong> Solo "Pan" o "Cerveza" ❌<br>
+                    <strong>NO:</strong> Solo "Cerveza" ❌<br>
                     <strong>SÍ:</strong> Nombre completo con detalles ✅
                 </div>
             </div>
             
+            <!-- MOTIVO -->
             <div class="form-group">
                 <label for="motivo">Motivo *</label>
                 <select id="motivo" required onchange="mostrarNotaMotivo()">
@@ -358,11 +359,13 @@
                 <strong>No Llegó del Proveedor:</strong> Lo pedimos pero no llegó a tiempo. Retraso en entrega o error en el pedido.
             </div>
             
+            <!-- NOTAS ADICIONALES -->
             <div class="form-group">
                 <label for="notas">Notas Adicionales (opcional)</label>
                 <textarea id="notas" placeholder="Ej: Cliente lo pidió 3 veces, Proveedor dijo que trae mañana, etc."></textarea>
             </div>
             
+            <!-- BOTÓN REGISTRAR -->
             <button type="button" id="btnGuardar" onclick="guardarFaltante()">
                 ✅ Registrar
             </button>
@@ -393,11 +396,6 @@
             const horas = String(ahora.getHours()).padStart(2, '0');
             const minutos = String(ahora.getMinutes()).padStart(2, '0');
             document.getElementById('horaInfo').textContent = `${horas}:${minutos}`;
-            
-            // Turno (7-16 = Mañana, 16-00 = Tarde)
-            const hora = ahora.getHours();
-            const turno = (hora >= 7 && hora < 16) ? 'Mañana' : 'Tarde';
-            document.getElementById('turnoInfo').textContent = turno;
         }
         
         function mostrarNotaMotivo() {
@@ -419,11 +417,12 @@
         }
         
         async function guardarFaltante() {
+            const responsable = document.getElementById('responsable').value.trim();
             const producto = document.getElementById('producto').value.trim();
             const motivo = document.getElementById('motivo').value;
             const notas = document.getElementById('notas').value.trim();
             
-            if (!producto || !motivo) {
+            if (!responsable || !producto || !motivo) {
                 mostrarMensaje('message', '⚠️ Completa todos los campos obligatorios', 'error');
                 return;
             }
@@ -444,8 +443,12 @@
             const hora_num = ahora.getHours();
             const turno = (hora_num >= 7 && hora_num < 16) ? 'Mañana' : 'Tarde';
             
+            // Combinar Responsable - Turno
+            const responsableConTurno = `${responsable} - ${turno}`;
+            
             const datos = {
                 fecha,
+                responsable: responsableConTurno,
                 hora,
                 turno,
                 producto,
@@ -477,10 +480,11 @@
                     
                     // Limpiar y enfoque
                     setTimeout(() => {
+                        document.getElementById('responsable').value = '';
                         document.getElementById('producto').value = '';
                         document.getElementById('motivo').value = '';
                         document.getElementById('notas').value = '';
-                        document.getElementById('producto').focus();
+                        document.getElementById('responsable').focus();
                         document.getElementById('loading').style.display = 'none';
                         document.getElementById('btnGuardar').disabled = false;
                         document.getElementById('message').style.display = 'none';
