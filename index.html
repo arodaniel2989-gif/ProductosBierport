@@ -13,7 +13,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%);
             min-height: 100vh;
             padding: 40px 20px;
         }
@@ -56,6 +56,7 @@
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid rgba(255,255,255,0.3);
+            font-weight: 600;
         }
         
         .grid {
@@ -67,101 +68,112 @@
         .card {
             background: white;
             border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-height: 200px;
-            border-top: 4px solid;
-        }
-        
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        
-        .card-icon {
-            font-size: 44px;
-            margin-bottom: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 4px solid;
         }
         
         .card-title {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 600;
-            color: #333;
-            margin: 0 0 8px 0;
+            color: #1e3a8a;
+            margin-bottom: 8px;
         }
         
         .card-desc {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.5;
-            margin: 0 0 12px 0;
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 10px;
         }
         
-        .card-action {
-            font-size: 11px;
-            font-weight: 600;
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin-top: 12px;
+        /* SECCIONES CON COLORES */
+        .card-apertura {
+            border-left-color: #14b8a6;
         }
         
-        .card.stock {
-            border-top-color: #f59e0b;
+        .card-turno {
+            border-left-color: #3b82f6;
         }
         
-        .card.stock:hover {
-            background: linear-gradient(135deg, #f59e0b15 0%, #d9770615 100%);
-        }
-        
-        .card.stock .card-action {
-            background: #f59e0b15;
-            color: #d97706;
-        }
-        
-        .card.productos {
-            border-top-color: #667eea;
-        }
-        
-        .card.productos:hover {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-        }
-        
-        .card.productos .card-action {
-            background: #667eea15;
-            color: #534ab7;
-        }
-        
-        .card.caja {
-            border-top-color: #17a2b8;
-        }
-        
-        .card.caja:hover {
-            background: linear-gradient(135deg, #17a2b815 0%, #13849615 100%);
-        }
-        
-        .card.caja .card-action {
-            background: #17a2b815;
-            color: #138496;
+        .card-cierre {
+            border-left-color: #f59e0b;
         }
         
         .info-box {
-            background: rgba(255,255,255,0.15);
-            border-left: 4px solid white;
-            padding: 16px;
-            border-radius: 8px;
-            color: white;
-            font-size: 13px;
-            text-align: center;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
             margin-bottom: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .info-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 12px;
+        }
+        
+        .info-item {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+        
+        .info-item strong {
+            color: #1e3a8a;
+        }
+        
+        .accesos {
+            margin-bottom: 50px;
+        }
+        
+        .accesos-title {
+            font-size: 18px;
+            color: white;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            font-weight: 600;
+        }
+        
+        .accesos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .acceso-btn {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            border: 2px solid #10b981;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .acceso-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            border-color: #059669;
+            background: #f0fdf4;
+        }
+        
+        .acceso-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+        
+        .acceso-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a8a;
         }
         
         .footer {
@@ -182,57 +194,140 @@
             <h1 class="title">BIERPORT</h1>
             <p class="subtitle">Sistema de Control Integral</p>
         </div>
-        
-        <!-- SECCIÓN 1: CONTROLES OPERATIVOS -->
-        <div class="section">
-            <h2 class="section-title">📋 Controles Operativos</h2>
-            <div class="grid">
-                
-                <!-- CONTROL DE STOCK: PANADERÍA + FIAMBRERÍA UNIFICADO -->
-                <a href="https://arodaniel2989-gif.github.io/ProductosBierport/control_perecederos_final_fix.html" class="card stock">
-                    <div class="card-icon">🏪</div>
-                    <h3 class="card-title">Control de Stock</h3>
-                    <p class="card-desc">Panadería + Fiambrería<br>Apertura y Cierre</p>
-                    <div class="card-action">→ ABRIR</div>
-                </a>
-                
-                <!-- PRODUCTOS FALTANTES -->
-                <a href="https://arodaniel2989-gif.github.io/ProductosBierport/formulario.html" target="_blank" class="card productos">
-                    <div class="card-icon">📦</div>
-                    <h3 class="card-title">Productos Faltantes</h3>
-                    <p class="card-desc">Registra productos<br>que solicitan clientes</p>
-                    <div class="card-action">↗ NUEVA PESTAÑA</div>
-                </a>
-                
-            </div>
-        </div>
-        
-        <!-- INFO BOX -->
+
+        <!-- INSTRUCCIONES -->
         <div class="info-box">
-            💡 Los controles de stock se hacen al inicio y cierre de jornada. Los productos faltantes se registran durante todo el día.
-        </div>
-        
-        <!-- SECCIÓN 2: CONTROL CAJA -->
-        <div class="section">
-            <h2 class="section-title">💳 Control de Caja</h2>
-            <div class="grid">
-                
-                <!-- CONTROL CAJA (SUBE + TRANSFERENCIAS) -->
-                <a href="https://arodaniel2989-gif.github.io/control-sube/" target="_blank" class="card caja">
-                    <div class="card-icon">💰</div>
-                    <h3 class="card-title">Control de Caja</h3>
-                    <p class="card-desc">Saldo SUBE<br>+ Transferencias</p>
-                    <div class="card-action">↗ NUEVA PESTAÑA</div>
-                </a>
-                
+            <div class="info-title">📋 Cómo funciona el sistema</div>
+            <div class="info-item">
+                <strong>Mañana:</strong> Abre el local, registra stocks iniciales y saldo SUBE. Durante el turno, registra faltantes y transferencias. Al cierre de mañana, ingresa saldo final SUBE y factura en Odoo.
+            </div>
+            <div class="info-item">
+                <strong>Tarde:</strong> Abre nuevo turno con saldo inicial SUBE. Durante el turno, registra faltantes y transferencias. Al cerrar, ingresa saldo final, registra stocks finales, bajas y factura en Odoo.
             </div>
         </div>
-        
+
+        <!-- SECCIÓN 1: AL ABRIR EL LOCAL (MAÑANA) -->
+        <div class="section">
+            <h2 class="section-title">🌅 Al abrir el local (Mañana)</h2>
+            <div class="grid">
+                <div class="card card-apertura">
+                    <div class="card-title">1. Iniciar sistemas</div>
+                    <div class="card-desc">Abre Odoo y Sistema SUBE</div>
+                </div>
+                <div class="card card-apertura">
+                    <div class="card-title">2. Stock inicial</div>
+                    <div class="card-desc">Registra Stock Inicial Panadería + Fiambrería en Control de Stock</div>
+                </div>
+                <div class="card card-apertura">
+                    <div class="card-title">3. Saldo inicial SUBE</div>
+                    <div class="card-desc">Ingresa en pestaña Saldo SUBE (traído desde App SUBE)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: DURANTE EL TURNO -->
+        <div class="section">
+            <h2 class="section-title">📱 Durante el turno (Mañana y Tarde)</h2>
+            <div class="grid">
+                <div class="card card-turno">
+                    <div class="card-title">Registrar faltantes</div>
+                    <div class="card-desc">Usa la app cuando falte algo. Se acumula para análisis diario</div>
+                </div>
+                <div class="card card-turno">
+                    <div class="card-title">Registrar transferencias</div>
+                    <div class="card-desc">Ingresa pagos MercadoPago en pestaña Transferencias. Se acumula para arqueo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: AL FINALIZAR TURNO MAÑANA -->
+        <div class="section">
+            <h2 class="section-title">🌆 Al finalizar turno Mañana</h2>
+            <div class="grid">
+                <div class="card card-cierre">
+                    <div class="card-title">1. Saldo final SUBE</div>
+                    <div class="card-desc">Ingresa en pestaña Saldo SUBE. Arroja importe → Factura en Odoo</div>
+                </div>
+                <div class="card card-cierre">
+                    <div class="card-title">2. Transferencias</div>
+                    <div class="card-desc">Registra Total Transferencias al arqueo de caja en Odoo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: AL ABRIR TURNO TARDE -->
+        <div class="section">
+            <h2 class="section-title">🌅 Al abrir turno Tarde</h2>
+            <div class="grid">
+                <div class="card card-apertura">
+                    <div class="card-title">1. Saldo inicial SUBE</div>
+                    <div class="card-desc">Ingresa en pestaña Saldo SUBE (nuevo turno, desde App SUBE)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: DURANTE TURNO TARDE -->
+        <div class="section">
+            <h2 class="section-title">📱 Durante turno Tarde</h2>
+            <div class="grid">
+                <div class="card card-turno">
+                    <div class="card-title">Registrar faltantes</div>
+                    <div class="card-desc">Usa la app cuando falte algo. Se acumula para análisis diario</div>
+                </div>
+                <div class="card card-turno">
+                    <div class="card-title">Registrar transferencias</div>
+                    <div class="card-desc">Ingresa pagos MercadoPago en pestaña Transferencias. Se acumula para arqueo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 6: AL CERRAR EL LOCAL (TARDE) -->
+        <div class="section">
+            <h2 class="section-title">🌆 Al cerrar el local (Tarde)</h2>
+            <div class="grid">
+                <div class="card card-cierre">
+                    <div class="card-title">1. Saldo final SUBE</div>
+                    <div class="card-desc">Ingresa en pestaña Saldo SUBE. Arroja importe → Factura en Odoo</div>
+                </div>
+                <div class="card card-cierre">
+                    <div class="card-title">2. Stock final</div>
+                    <div class="card-desc">Registra Stock Final Panadería + Fiambrería en Control de Stock</div>
+                </div>
+                <div class="card card-cierre">
+                    <div class="card-title">3. Bajas</div>
+                    <div class="card-desc">Registra Bajas con motivos en Control de Stock</div>
+                </div>
+                <div class="card card-cierre">
+                    <div class="card-title">4. Transferencias</div>
+                    <div class="card-desc">Registra Total Transferencias al arqueo de caja en Odoo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCESOS RÁPIDOS -->
+        <div class="accesos">
+            <h2 class="accesos-title">⚡ Accesos rápidos</h2>
+            <div class="accesos-grid">
+                <a href="https://arodaniel2989-gif.github.io/ProductosBierport/control_perecederos_final_fix.html" class="acceso-btn">
+                    <div class="acceso-icon">🏪</div>
+                    <div class="acceso-label">Control de Stock</div>
+                </a>
+                <a href="https://arodaniel2989-gif.github.io/ProductosBierport/formulario_faltantes.html" class="acceso-btn">
+                    <div class="acceso-icon">📦</div>
+                    <div class="acceso-label">Registro Faltantes</div>
+                </a>
+                <a href="https://arodaniel2989-gif.github.io/control-sube/" class="acceso-btn">
+                    <div class="acceso-icon">💰</div>
+                    <div class="acceso-label">Control de Caja SUBE</div>
+                </a>
+            </div>
+        </div>
+
         <!-- FOOTER -->
         <div class="footer">
             <p>Bierport © 2025 • Sistema de Control Integral</p>
         </div>
-        
+
     </div>
 </body>
 </html>
